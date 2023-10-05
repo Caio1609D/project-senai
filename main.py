@@ -1,5 +1,9 @@
 from tkinter import *
 from tkinter import ttk
+import sys
+sys.path.append('/tools')
+import tools.db as db
+
 root = Tk()
 frm = ttk.Frame(root, padding=10)
 frm.grid()
