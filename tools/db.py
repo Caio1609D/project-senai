@@ -26,11 +26,17 @@ Base.metadata.create_all(engine)
 
 def add_reagent(name, formula, density, quantity):
     with Session(engine) as session:
-        session.execute(insert(Reagent), {"name": name, "formula": formula, "density": density, "quantity": quantity})
+        session.execute(insert(Reagent), {"name": name, "formula": formula, "density": density, "quantity": quantity, "state": "available"})
         session.commit()
 
-def update_reagent(rid, quantity):
+def return_reagent(rid, quantity):
     with Session(engine) as session:
-        session.execute(update(Reagent).where(Reagent.id == rid).values(quantity=quantity))
+        session.execute(update(Reagent).where(Reagent.id == rid).values(quantity=quantity, state="available"))
         session.commit()
 
+def get_reagent(rid):
+        with Session(engine) as session:
+            session.execute(update(Reagent).where(Reagent.id == rid).values(state="unavailable"))
+            session.commit()
+
+get_reagent(1)
