@@ -35,8 +35,8 @@ def return_reagent(rid, quantity):
         session.commit()
 
 def get_reagent(rid):
-        with Session(engine) as session:
-            session.execute(update(Reagent).where(Reagent.id == rid).values(state="unavailable"))
-            session.commit()
+    with Session(engine) as session:
+        session.execute(update(Reagent).where(Reagent.id == rid).values(state="unavailable"))
+        session.commit()
 
 get_reagent(1)
