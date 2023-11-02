@@ -21,22 +21,34 @@ class Reagent(Base):
 
     def __repr__(self) -> str:
         return f"Reagent(id={self.id!r}, name={self.name!r}, formula={self.formula!r}, density={self.density!r}, quantity={self.quantity!r})"
-    
+
 Base.metadata.create_all(engine)
 
 def add_reagent(name, formula, density, quantity):
-    with Session(engine) as session:
-        session.execute(insert(Reagent), {"name": name, "formula": formula, "density": density, "quantity": quantity, "state": "available"})
-        session.commit()
+    try:
+        with Session(engine) as session:
+            session.execute(insert(Reagent), {"name": name, "formula": formula, "density": density, "quantity": quantity, "state": "available"})
+            session.commit()
+        return 0
+    except:
+        return 1
 
 def return_reagent(rid, quantity):
-    with Session(engine) as session:
-        session.execute(update(Reagent).where(Reagent.id == rid).values(quantity=quantity, state="available"))
-        session.commit()
+    try:
+        with Session(engine) as session:
+            session.execute(update(Reagent).where(Reagent.id == rid).values(quantity=quantity, state="available"))
+            session.commit()
+        return 0
+    except:
+        return 1
 
 def get_reagent(rid):
-    with Session(engine) as session:
-        session.execute(update(Reagent).where(Reagent.id == rid).values(state="unavailable"))
-        session.commit()
+    try:
+        with Session(engine) as session:
+            session.execute(update(Reagent).where(Reagent.id == rid).values(state="unavailable"))
+            session.commit()
+        return 0
+    except:
+        return 1
 
 get_reagent(1)
