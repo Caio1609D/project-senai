@@ -14,6 +14,7 @@ class Application():
         self.style = style
         self.screen()
         self.frames()
+        self.treeview()
         root.mainloop()
     
     def screen(self):
@@ -32,5 +33,27 @@ class Application():
 
     def buttons(self):
         self.clean = tk.Button(self.frm)
+
+    def treeview(self):
+        self.tv = ttk.Treeview(self.frm)
+        self.tv['columns'] = ('Name', 'Formula', 'Density', 'Quantity', 'State')
+        self.tv.column('#0', width=0, stretch=tk.NO)
+        self.tv.column('Name', anchor=tk.CENTER, width=80)
+        self.tv.column('Formula', anchor=tk.CENTER, width=80)
+        self.tv.column('Density', anchor=tk.CENTER, width=80)
+        self.tv.column('Quantity', anchor=tk.CENTER, width=80)
+        self.tv.column('State', anchor=tk.CENTER, width=80)
+
+        self.tv.heading('#0', text='', anchor=tk.CENTER)
+        self.tv.heading('Name', text='Nome', anchor=tk.CENTER)
+        self.tv.heading('Formula', text='Fórmula', anchor=tk.CENTER)
+        self.tv.heading('Density', text='Densidade', anchor=tk.CENTER)
+        self.tv.heading('Quantity', text='Quantidade', anchor=tk.CENTER)
+        self.tv.heading('State', text='Estado', anchor=tk.CENTER)
+
+        for i in db.list_reagents():
+            self.tv.insert(parent='', index=0, iid=0, text='', values=(i['name'], i["formula"], i["density"], i["quantity"], i["state"]))
+
+        self.tv.place(relx=0, rely=0, relwidth=1, relheight=1)
 
 Application()

@@ -50,5 +50,15 @@ def get_reagent(rid):
         return 0
     except:
         return 1
+    
+def list_reagents():
+    try:
+        with Session(engine) as session:
+            stmt = select(Reagent)
+            for i in session.execute(stmt):
+                print(i.name)
+                yield i
+    except:
+        return False
 
-get_reagent(1)
+# add_reagent("Ácido Sulfúrico", "H2SO4", 1.83, 2)
