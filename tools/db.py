@@ -54,11 +54,10 @@ def get_reagent(rid):
 def list_reagents():
     try:
         with Session(engine) as session:
-            stmt = select(Reagent)
-            for i in session.execute(stmt):
-                print(i.name)
-                yield i
+            reagents = session.execute(select(Reagent)).all()
+            for i in reagents:
+                yield i[0]
     except:
-        return False
+        raise Exception("A critical error has ocurred while selecting reagents")
 
 # add_reagent("Ácido Sulfúrico", "H2SO4", 1.83, 2)
