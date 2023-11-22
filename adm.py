@@ -41,6 +41,26 @@ class Funcs():
         self.logwin.destroy()
         self.root.deiconify()
 
+        self.register = tk.Toplevel(self.root)
+        self.register.geometry("600x240")
+        self.register.title("Gastos")
+
+        self.spends = "Desde o último uso tivemos:\n"
+        for i in db.list_reagents():
+            if i.last > i.quantity:
+                self.spends += f"- Gasto de {round(i.last - i.quantity, 3) * 1000} gramas ({round((i.last - i.quantity) / i.density, 3) * 1000} mililitros) de {i.name}\n"
+            db.update_last(i.id, i.quantity)
+
+        self.spends_label = tk.Label(self.register, text=self.spends)
+        self.registerBtn = tk.Button(self.register, text="Ok!", command=lambda: self.register.destroy())
+        
+        if self.spends != "Desde o último uso tivemos:\n":
+            self.spends_label.place(relx=0, rely=0, relwidth=0.5, relheight=0.8)
+            self.registerBtn.place(relx=0.425, rely=0.8, relwidth=0.15, relheight=0.2)
+            self.register.mainloop()
+        else:
+            self.register.destroy()
+
     def add_reagent(self, name, formula, density, quantity):
         db.add_reagent(name, formula, density, quantity)
         self.refresh_table()

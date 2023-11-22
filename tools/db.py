@@ -18,16 +18,17 @@ class Reagent(Base):
     density: Mapped[float] = mapped_column()
     quantity: Mapped[float] = mapped_column()
     state: Mapped[str] = mapped_column()
+    last: Mapped[float] = mapped_column()
 
     def __repr__(self) -> str:
-        return f"Reagent(id={self.id!r}, name={self.name!r}, formula={self.formula!r}, density={self.density!r}, quantity={self.quantity!r})"
+        return f"Reagent(id={self.id!r}, name={self.name!r}, formula={self.formula!r}, density={self.density!r}, quantity={self.quantity!r}, state={self.state!r}, last={self.last!r})"
 
 Base.metadata.create_all(engine)
 
 def add_reagent(name, formula, density, quantity):
     try:
         with Session(engine) as session:
-            session.execute(insert(Reagent), {"name": name, "formula": formula, "density": density, "quantity": quantity, "state": "available"})
+            session.execute(insert(Reagent), {"name": name, "formula": formula, "density": density, "quantity": quantity, "state": "available", "last": 0})
             session.commit()
         return 0
     except:
@@ -46,6 +47,15 @@ def return_reagent(rid, quantity):
     try:
         with Session(engine) as session:
             session.execute(update(Reagent).where(Reagent.id == rid).values(quantity=quantity, state="available"))
+            session.commit()
+        return 0
+    except:
+        return 1
+    
+def update_last(rid, quantity):
+    try:
+        with Session(engine) as session:
+            session.execute(update(Reagent).where(Reagent.id == rid).values(last=quantity))
             session.commit()
         return 0
     except:
