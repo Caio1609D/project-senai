@@ -33,6 +33,15 @@ def add_reagent(name, formula, density, quantity):
     except:
         return 1
 
+def get_quantity(rid):
+    try:
+        with Session(engine) as session:
+            session.execute(select(Reagent.quantity).where(Reagent.id == rid))
+            session.commit()
+        return 0
+    except:
+        return 1
+
 def return_reagent(rid, quantity):
     try:
         with Session(engine) as session:
