@@ -37,8 +37,7 @@ class Funcs():
         db.return_reagent(rid, quantity)
         self.refresh_table()
 
-    def login(self, user, password):
-        self.logwin.destroy()
+    def spends(self):
         self.root.deiconify()
 
         self.register = tk.Toplevel(self.root)
@@ -48,7 +47,7 @@ class Funcs():
         self.spends = "Desde o último uso tivemos:\n"
         for i in db.list_reagents():
             if i.last > i.quantity:
-                self.spends += f"- Gasto de {round(i.last - i.quantity, 3) * 1000} gramas ({round((i.last - i.quantity) / i.density, 3) * 1000} mililitros) de {i.name}\n"
+                self.spends += f"- Gasto de {int(round(i.last - i.quantity, 3) * 1000)} gramas ({int(round((i.last - i.quantity) / i.density, 3) * 1000)} mililitros) de {i.name}\n"
             db.update_last(i.id, i.quantity)
 
         self.spends_label = tk.Label(self.register, text=self.spends)
@@ -60,6 +59,15 @@ class Funcs():
             self.register.mainloop()
         else:
             self.register.destroy()
+
+    def login(self, user, password):
+        self.logwin.destroy()
+        if db.login(user, password):
+            self.root.deiconify()
+            self.spends()
+        else:
+            self.root.destroy()
+        
 
     def add_reagent(self, name, formula, density, quantity):
         db.add_reagent(name, formula, density, quantity)

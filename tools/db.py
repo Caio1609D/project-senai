@@ -1,5 +1,6 @@
 import sqlalchemy
 from sqlalchemy.orm import Session, Mapped, DeclarativeBase, mapped_column
+from werkzeug.security import check_password_hash, generate_password_hash
 
 engine = sqlalchemy.create_engine("sqlite:///reagents.db")
 insert = sqlalchemy.insert
@@ -22,6 +23,16 @@ class Reagent(Base):
 
     def __repr__(self) -> str:
         return f"Reagent(id={self.id!r}, name={self.name!r}, formula={self.formula!r}, density={self.density!r}, quantity={self.quantity!r}, state={self.state!r}, last={self.last!r})"
+
+class Admin(Base):
+    __tablename__ = "admins"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column()
+    password: Mapped[str] = mapped_column()
+
+    def __repr__(self) -> str:
+        return f"User(id={self.id!r}, username={self.username!r}, password={self.password!r})"
 
 Base.metadata.create_all(engine)
 
@@ -61,6 +72,26 @@ def update_last(rid, quantity):
     except:
         return 1
 
+def create_user(username, password):
+    try:
+        with Session(engine) as session:
+            session.execute(insert(Admin).values(username=username, password=generate_password_hash(password)))
+            session.commit()
+        return 0
+    except:
+        return 1
+
+def login(username, password):
+    authenticate = False
+    with Session(engine) as session:
+        truepass = session.execute(select(Admin.password).where(Admin.username == username)).first()
+        if truepass:
+            truepass = truepass[0]
+            if check_password_hash(truepass, password):
+                authenticate = True
+                session.commit()
+    return authenticate
+
 def get_reagent(rid):
     try:
         with Session(engine) as session:
@@ -79,4 +110,4 @@ def list_reagents():
     except:
         raise Exception("A critical error has ocurred while selecting reagents")
 
-# add_reagent("Ácido Sulfúrico", "H2SO4", 1.83, 2)
+# create_user("Teste", "123456")
