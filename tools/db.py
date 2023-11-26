@@ -1,11 +1,13 @@
-import sqlalchemy
-from sqlalchemy.orm import Session, Mapped, DeclarativeBase, mapped_column
+import sqlalchemy as sql
+import datetime
+from sqlalchemy.orm import Session, Mapped, DeclarativeBase, mapped_column, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
+from typing import List
 
-engine = sqlalchemy.create_engine("sqlite:///reagents.db")
-insert = sqlalchemy.insert
-select = sqlalchemy.select
-update = sqlalchemy.update
+engine = sql.create_engine("sqlite:///reagents.db")
+insert = sql.insert
+select = sql.select
+update = sql.update
 
 class Base(DeclarativeBase):
     pass
@@ -19,7 +21,7 @@ class Reagent(Base):
     density: Mapped[float] = mapped_column()
     quantity: Mapped[float] = mapped_column()
     state: Mapped[str] = mapped_column()
-    last: Mapped[float] = mapped_column()
+    registers: Mapped[List["Register"]] = relationship()
 
     def __repr__(self) -> str:
         return f"Reagent(id={self.id!r}, name={self.name!r}, formula={self.formula!r}, density={self.density!r}, quantity={self.quantity!r}, state={self.state!r}, last={self.last!r})"
@@ -33,6 +35,13 @@ class Admin(Base):
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, username={self.username!r}, password={self.password!r})"
+    
+class Register(Base):
+    __tablename__ = "registers"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    reagent_id: Mapped[int] = mapped_column(sql.ForeingKey("admins.id"))
+    date: Mapped[datetime.datetime] = mapped_column(sql.types.DateTime(timezone=True), server_default=sql.sql.func.now())
 
 Base.metadata.create_all(engine)
 
