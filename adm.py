@@ -25,17 +25,9 @@ class Funcs():
                 "Disponível" if i.state == "available" else "Indisponível",
             ))
 
-    def select_row(self, event):
+    def select_row(self):
         curItem = self.tv.focus()
         self.selected = self.tv.item(curItem)["values"]
-
-    def get_reagent(self, rid):
-        db.get_reagent(rid)
-        self.refresh_table()
-
-    def return_reagent(self, rid, quantity):
-        db.return_reagent(rid, quantity)
-        self.refresh_table()
 
     def spends(self):
         self.root.deiconify()
@@ -68,11 +60,9 @@ class Funcs():
         else:
             self.root.destroy()
         
-
     def add_reagent(self, name, formula, density, quantity):
         db.add_reagent(name, formula, density, quantity)
         self.refresh_table()
-
 
 # Classe que repersenta a nossa aplicação
 class Application(Funcs):

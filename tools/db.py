@@ -40,8 +40,10 @@ class Register(Base):
     __tablename__ = "registers"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    reagent_id: Mapped[int] = mapped_column(sql.ForeingKey("admins.id"))
+    reagent_id: Mapped[int] = mapped_column(sql.ForeignKey("reagents.id"))
     date: Mapped[datetime.datetime] = mapped_column(sql.types.DateTime(timezone=True), server_default=sql.sql.func.now())
+    description: Mapped[str] = mapped_column()
+    spend: Mapped[float] = mapped_column()
 
 Base.metadata.create_all(engine)
 
@@ -52,7 +54,7 @@ def add_reagent(name, formula, density, quantity):
             session.commit()
         return 0
     except:
-        return 1
+        raise Exception("Couldn't add reagent")
 
 def get_quantity(rid):
     try:
@@ -61,26 +63,30 @@ def get_quantity(rid):
             session.commit()
         return 0
     except:
-        return 1
+        raise Exception("Couldn't define the quantity")
+
+def is_available(rid):
+    try:
+        with Session(engine) as session:
+            stmt = select(Reagent.state).where(Reagent.id == rid)
+            state = session.scalar(stmt)
+            if state == "available":
+                return True
+            else:
+                return False
+    except:
+        raise Exception("We couldn't find out wether the reagent is available or not")
 
 def return_reagent(rid, quantity):
     try:
         with Session(engine) as session:
             session.execute(update(Reagent).where(Reagent.id == rid).values(quantity=quantity, state="available"))
+            session.execute()
             session.commit()
         return 0
     except:
-        return 1
+        raise Exception("Couldn't return reagent")
     
-def update_last(rid, quantity):
-    try:
-        with Session(engine) as session:
-            session.execute(update(Reagent).where(Reagent.id == rid).values(last=quantity))
-            session.commit()
-        return 0
-    except:
-        return 1
-
 def create_user(username, password):
     try:
         with Session(engine) as session:
@@ -88,27 +94,31 @@ def create_user(username, password):
             session.commit()
         return 0
     except:
-        return 1
+        raise Exception("Error while creating a new user")
 
 def login(username, password):
     authenticate = False
-    with Session(engine) as session:
-        truepass = session.execute(select(Admin.password).where(Admin.username == username)).first()
-        if truepass:
-            truepass = truepass[0]
-            if check_password_hash(truepass, password):
-                authenticate = True
-                session.commit()
-    return authenticate
+    try: 
+        with Session(engine) as session:
+            truepass = session.execute(select(Admin.password).where(Admin.username == username)).first()
+            if truepass:
+                truepass = truepass[0]
+                if check_password_hash(truepass, password):
+                    authenticate = True
+                    session.commit()
+        return authenticate
+    except:
+        raise Exception("Error while logging in")
 
 def get_reagent(rid):
     try:
         with Session(engine) as session:
             session.execute(update(Reagent).where(Reagent.id == rid).values(state="unavailable"))
+            session.execute(insert(Register), {"reagent_id": rid})
             session.commit()
         return 0
     except:
-        return 1
+        raise Exception("Error while gettint reagent")
     
 def list_reagents():
     try:
