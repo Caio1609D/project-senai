@@ -24,7 +24,7 @@ class Reagent(Base):
     registers: Mapped[List["Register"]] = relationship()
 
     def __repr__(self) -> str:
-        return f"Reagent(id={self.id!r}, name={self.name!r}, formula={self.formula!r}, density={self.density!r}, quantity={self.quantity!r}, state={self.state!r}, last={self.last!r})"
+        return f"Reagent(id={self.id!r}, name={self.name!r}, formula={self.formula!r}, density={self.density!r}, quantity={self.quantity!r}, state={self.state!r})"
 
 class Admin(Base):
     __tablename__ = "admins"
@@ -44,44 +44,41 @@ class Register(Base):
     date: Mapped[datetime.datetime] = mapped_column(sql.types.DateTime(timezone=True), server_default=sql.sql.func.now())
     description: Mapped[str] = mapped_column()
     spend: Mapped[float] = mapped_column()
+    checked: Mapped[bool] = mapped_column()
+    
+    def __repr__(self) -> str:
+        return f"Register(id={self.id!r}, reagent_id={self.reagent_id!r}, date={self.date!r}, description={self.description!r}, spend={self.spend!r}, checked={self.checked!r})"
 
 Base.metadata.create_all(engine)
 
 def add_reagent(name, formula, density, quantity):
     try:
         with Session(engine) as session:
-            session.execute(insert(Reagent), {"name": name, "formula": formula, "density": density, "quantity": quantity, "state": "available", "last": 0})
+            session.execute(insert(Reagent), {"name": name, "formula": formula, "density": density, "quantity": quantity, "state": "available"})
             session.commit()
         return 0
     except:
         raise Exception("Couldn't add reagent")
 
-def get_quantity(rid):
+def reagent_properties(rid):
     try:
         with Session(engine) as session:
-            session.execute(select(Reagent.quantity).where(Reagent.id == rid))
+            reagent = session.execute(select(Reagent).where(Reagent.id == rid)).first()
+            reagent = reagent[0]
+            return reagent
             session.commit()
-        return 0
     except:
-        raise Exception("Couldn't define the quantity")
-
-def is_available(rid):
-    try:
-        with Session(engine) as session:
-            stmt = select(Reagent.state).where(Reagent.id == rid)
-            state = session.scalar(stmt)
-            if state == "available":
-                return True
-            else:
-                return False
-    except:
-        raise Exception("We couldn't find out wether the reagent is available or not")
+        raise Exception("Couldn't return reagent properties")
 
 def return_reagent(rid, quantity):
     try:
         with Session(engine) as session:
-            session.execute(update(Reagent).where(Reagent.id == rid).values(quantity=quantity, state="available"))
-            session.execute()
+            state = session.execute(select(Reagent.state).where(Reagent.id == rid)).first()[0]
+            if state == "unavailable":
+                mass = session.execute(select(Reagent.quantity).where(Reagent.id == rid)).first()[0]
+                reid = session.execute(select(Register.id).where(Register.reagent_id == rid).order_by(sql.desc(Register.date))).first()[0]
+                session.execute(update(Reagent).where(Reagent.id == rid).values(quantity=quantity, state="available"))
+                session.execute(update(Register).where(Register.id == reid).values(spend=(mass - quantity)))
             session.commit()
         return 0
     except:
@@ -105,16 +102,18 @@ def login(username, password):
                 truepass = truepass[0]
                 if check_password_hash(truepass, password):
                     authenticate = True
-                    session.commit()
+            session.commit()
         return authenticate
     except:
         raise Exception("Error while logging in")
 
-def get_reagent(rid):
+def get_reagent(rid, description):
     try:
         with Session(engine) as session:
-            session.execute(update(Reagent).where(Reagent.id == rid).values(state="unavailable"))
-            session.execute(insert(Register), {"reagent_id": rid})
+            state = session.execute(select(Reagent.state).where(Reagent.id == rid)).first()[0]
+            if state == "available":
+                session.execute(update(Reagent).where(Reagent.id == rid).values(state="unavailable"))
+                session.execute(insert(Register), {"reagent_id": rid, "description": description, "checked": False, "spend": -1})
             session.commit()
         return 0
     except:
@@ -128,5 +127,15 @@ def list_reagents():
                 yield i[0]
     except:
         raise Exception("A critical error has ocurred while selecting reagents")
+
+def list_registers():
+    try:
+        with Session(engine) as session:
+            registers = session.execute(select(Register).where(Register.checked == False)).all()
+            session.execute(update(Register).where(Register.checked == False).values(checked=True))
+            for i in registers:
+                yield i[0]
+    except:
+        raise Exception("A critical error has ocurred while selecting registers")
 
 # create_user("Teste", "123456")

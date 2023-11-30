@@ -9,7 +9,7 @@ mainfrm = tk.Frame()
 # Classe de funções adicionais
 class Funcs():
     def get_reagent(self, rid):
-        db.get_reagent(rid)
+        db.get_reagent(rid, "Sim")
         self.refresh_table()
 
     def return_reagent(self, rid, quantity):
