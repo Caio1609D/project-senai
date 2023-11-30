@@ -132,7 +132,7 @@ def list_registers():
     try:
         with Session(engine) as session:
             registers = session.execute(select(Register).where(Register.checked == False)).all()
-            session.execute(update(Register).where(Register.checked == False).values(checked=True))
+            session.execute(update(Register).where(Register.checked == False).values(checked=1))
             for i in registers:
                 yield i[0]
     except:

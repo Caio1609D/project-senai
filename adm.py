@@ -30,8 +30,6 @@ class Funcs():
         self.selected = self.tv.item(curItem)["values"]
 
     def spends(self):
-        self.root.deiconify()
-
         self.register = tk.Toplevel(self.root)
         self.register.geometry("600x240")
         self.register.title("Gastos")
@@ -141,6 +139,9 @@ class Application(Funcs):
 
         self.quantity_label = tk.Label(frm2, text="Quantidade (kg)") # Paleativo (só enquanto não temos a balança)
         self.quantity_entry = tk.Entry(frm2)
+        
+        self.title_label = tk.Label(frm2, text="Adicionar Reagentes:", font=('', 20), bg="#ebf2ff")
+        self.text_label = tk.Label(frm2, text="Nessa parte, você pode adicionar novos reagentes ao sistema. Use ao reabastecer o estoque.\nAbaixo, digite o nome do reagente, fórmula química, densidade e quantidade em kg", bg="#ebf2ff")
 
         self.addBtn = tk.Button(frm2, text="Adicionar Reagente", command=lambda: 
             self.add_reagent(
@@ -150,19 +151,25 @@ class Application(Funcs):
                 self.quantity_entry.get()
             )
         )
+        
+        self.registerBtn = tk.Button(frm2, text="Puxar Registro", command=self.spends)
 
         # Dando um place nisso tudo
-        self.name_label.place(relx=0.05, rely=0.05, relheight=0.09, relwidth=0.19)
-        self.formula_label.place(relx=0.25, rely=0.05, relheight=0.09, relwidth=0.19)
-        self.density_label.place(relx=0.45, rely=0.05, relheight=0.09, relwidth=0.19)
-        self.quantity_label.place(relx=0.65, rely=0.05, relheight=0.09, relwidth=0.19)
+        self.title_label.place(relx=0.05, rely=0.05, relheight=0.1, relwidth=1)
+        self.text_label.place(relx=0.05, rely=0.15, relheight=0.19, relwidth=1)
+        
+        self.name_label.place(relx=0.05, rely=0.35, relheight=0.09, relwidth=0.19)
+        self.formula_label.place(relx=0.25, rely=0.35, relheight=0.09, relwidth=0.19)
+        self.density_label.place(relx=0.45, rely=0.35, relheight=0.09, relwidth=0.19)
+        self.quantity_label.place(relx=0.65, rely=0.35, relheight=0.09, relwidth=0.19)
 
-        self.name_entry.place(relx=0.05, rely=0.15, relheight=0.09, relwidth=0.19)
-        self.formula_entry.place(relx=0.25, rely=0.15, relheight=0.09, relwidth=0.19)
-        self.density_entry.place(relx=0.45, rely=0.15, relheight=0.09, relwidth=0.19)
-        self.quantity_entry.place(relx=0.65, rely=0.15, relheight=0.09, relwidth=0.19)
+        self.name_entry.place(relx=0.05, rely=0.45, relheight=0.09, relwidth=0.19)
+        self.formula_entry.place(relx=0.25, rely=0.45, relheight=0.09, relwidth=0.19)
+        self.density_entry.place(relx=0.45, rely=0.45, relheight=0.09, relwidth=0.19)
+        self.quantity_entry.place(relx=0.65, rely=0.45, relheight=0.09, relwidth=0.19)
 
-        self.addBtn.place(relx=0.35, rely=0.25, relheight=0.14, relwidth=0.19)
+        self.addBtn.place(relx=0.05, rely=0.65, relheight=0.14, relwidth=0.19)
+        self.registerBtn.place(relx= 0.75, rely= 0.8, relheight=0.14, relwidth=0.19)
 
     # Configuração da Treeview
     def treeview(self):

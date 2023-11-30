@@ -59,16 +59,27 @@ class Application(Funcs):
 
     def widgets(self):
         # Botão para pegar (?) um reagente
+        self.get_label = tk.Label(self.mainfrm, text="Pegar Reagente", font=('bold'), bg="#ebf2ff")
         self.getBtn = tk.Button(self.mainfrm, text="Pegar", command=lambda: self.get_reagent(self.selected[0])) # Achar um termo/legenda melhor que "pegar"
-        self.getBtn.place(relx=0.05, rely=0.1, relwidth=0.1, relheight=0.1)
+        self.get_label.place(relx=0.05, rely=0.15, relwidth=0.16, relheight=0.07)
+        self.getBtn.place(relx=0.05, rely=0.2, relwidth=0.1, relheight=0.05)
 
         # Botão pra falar a quantidade de reagente devolvido
+        self.return_label = tk.Label(self.mainfrm, text="Devolver Reagente", font=('bold'), bg="#ebf2ff")
         self.returnEntry = tk.Entry(self.mainfrm)
-        self.returnEntry.place(relx=0.175, rely=0.1, relwidth=0.1, relheight=0.1)
+        self.return_label.place(relx=0.05, rely=0.35, relwidth=0.2, relheight=0.05)
+        self.returnEntry.place(relx=0.05, rely=0.4, relwidth=0.1, relheight=0.05)
 
         # Botão para devolver um reagente
         self.returnBtn = tk.Button(self.mainfrm, text="Devolver", command=lambda: self.return_reagent(self.selected[0], float(self.returnEntry.get())))
-        self.returnBtn.place(relx=0.3, rely=0.1, relwidth=0.1, relheight=0.1)
+        self.returnBtn.place(relx=0.16, rely=0.4, relwidth=0.1, relheight=0.05)
+        
+        self.title_label = tk.Label(self.mainfrm, text="Usar Reagentes", font=('', 20), bg="#ebf2ff")
+        self.text_label = tk.Label(self.mainfrm, text="Nessa parte, você pode pegar registrar o uso de reagentes do estoque.\nUse os botões abaixo para pegar e devolver reagentes e informe a massa do reagente no momento da devolução", bg="#ebf2ff")
+
+        self.title_label.place(relx=0.05, rely=0.025, relheight=0.05, relwidth=0.9)
+        self.text_label.place(relx=0.05, rely=0.10, relheight=0.05, relwidth=0.9)
+
         
     # Configuração da Treeview
     def treeview(self):
