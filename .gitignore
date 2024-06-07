@@ -1,3 +1,8 @@
+#--------------------------------------------------------------------------------------------------------------------
+# Esse modelo padrão do Github funciona bem pras demandas desse projeto
+# No entanto, foi necessário incluir reagents.db para não comittar os reagentes
+#--------------------------------------------------------------------------------------------------------------------
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -151,6 +156,9 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# A tabela de reagentes
+reagents.db
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
