@@ -138,4 +138,4 @@ def list_registers():
     except:
         raise Exception("A critical error has ocurred while selecting registers")
 
-# create_user("Teste", "123456")
+create_user("Teste", "123456")
