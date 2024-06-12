@@ -138,4 +138,12 @@ def list_registers():
     except:
         raise Exception("A critical error has ocurred while selecting registers")
 
+# Esse trecho de código usa a exceção levantada por tentar achar um item que não existe para determinar se list_reagents está ou não vazio
+try:
+    next(list_reagents())
+except:
+    add_reagent("Amônia", "NH3", 0.00069, 0.05)
+    add_reagent("Ácido Clorídrico", "HCl", 1.1628, 0.35)
+    add_reagent("Hidróxido de Sódio", "NaOH", 2.13, 0.75)
+
 create_user("Teste", "123456")
