@@ -18,8 +18,8 @@ class Reagent(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column()
     formula: Mapped[str] = mapped_column()
-    density: Mapped[float] = mapped_column()
-    quantity: Mapped[float] = mapped_column()
+    density: Mapped[float] = mapped_column() # Sempre em g/mL
+    quantity: Mapped[float] = mapped_column() # Sempre em kg
     state: Mapped[str] = mapped_column()
     registers: Mapped[List["Register"]] = relationship()
 
